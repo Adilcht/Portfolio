@@ -2152,6 +2152,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            flex-direction: column;
         }
 
         .project-visual::before {
@@ -2225,6 +2226,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .video-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 40px rgba(0, 247, 255, 0.6);
         }
 
         .taskflow-project .video-container {
@@ -2278,9 +2287,9 @@
         .project-video {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Changé de 'cover' à 'contain' pour voir toute la vidéo */
+            object-fit: contain;
             border-radius: 15px;
-            background-color: #000; /* Fond noir pour les zones non couvertes */
+            background-color: #000;
         }
 
         /* Pour les vidéos avec des dimensions différentes */
@@ -2295,6 +2304,37 @@
             border-radius: 15px;
             position: relative;
             z-index: 2;
+        }
+
+        /* Video Play Overlay */
+        .video-play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 3;
+        }
+
+        .video-container:hover .video-play-overlay {
+            opacity: 1;
+        }
+
+        .play-icon {
+            font-size: 3rem;
+            color: white;
+            text-shadow: 0 0 20px rgba(0, 247, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .video-container:hover .play-icon {
+            transform: scale(1.2);
         }
 
         /* LED Cinematic Effect */
@@ -2407,6 +2447,71 @@
         @keyframes video-led-move {
             0% { left: -100%; }
             100% { left: 100%; }
+        }
+
+        /* Modal pour vidéo plein écran */
+        .video-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .video-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .video-modal-content {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-modal-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0, 247, 255, 0.5);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: var(--primary-color);
+            color: var(--dark-bg);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10001;
+        }
+
+        .close-modal:hover {
+            background: var(--secondary-color);
+            transform: scale(1.1);
         }
 
         /* Social Media - Fixed */
@@ -2996,6 +3101,18 @@
     </style>
 </head>
 <body>
+    <!-- Modal pour vidéo plein écran -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-modal-content">
+            <button class="close-modal" id="closeModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <video class="video-modal-video" id="modalVideo" controls>
+                Votre navigateur ne supporte pas la lecture de vidéos.
+            </video>
+        </div>
+    </div>
+
     <!-- Custom Cursor -->
     <div class="cursor"></div>
     <div class="cursor-follower"></div>
@@ -3361,74 +3478,81 @@
         <section id="projects" class="projects-section">
             <h2 class="section-title">Projects</h2>
             <div class="projects-container">
-  <!-- TaskFlow Project -->
-<div class="project-card taskflow-project">
-    <div class="project-content">
-        <h3 class="project-title">TaskFlow – Web Application</h3>
-        <p class="project-description">
-            Developed a full-stack project management web app featuring two dashboards: a User Dashboard and an Admin Dashboard.
-            The project was organized on Trello, then deployed and published on GitHub.
-            Frontend built with React, backend developed in Laravel (PHP) with MySQL database.
-            Includes authentication and role-based access using Laratrust, automatically redirecting users according to their role.
-            A secure API connection links the frontend and backend for smooth data communication.
-        </p>
-        <div class="project-tech">
-            <div class="tech-badge">
-                <i class="fab fa-laravel"></i>
-                <span>Laravel 10</span>
-            </div>
-            <div class="tech-badge">
-                <i class="fab fa-react"></i>
-                <span>React</span>
-            </div>
-            <div class="tech-badge">
-                <i class="fas fa-database"></i>
-                <span>MySQL</span>
-            </div>
-            <div class="tech-badge">
-                <i class="fas fa-shield-alt"></i>
-                <span>Sanctum</span>
-            </div>
-            <div class="tech-badge">
-                <i class="fas fa-users"></i>
-                <span>Laratrust</span>
-            </div>
-            <div class="tech-badge">
-                <i class="fas fa-plug"></i>
-                <span>API</span>
-            </div>
-            <div class="tech-badge">
-                <i class="fas fa-trello"></i>
-                <span>Trello</span>
-            </div>
-            <div class="tech-badge">
-                <i class="fab fa-github"></i>
-                <span>GitHub</span>
-            </div>
-        </div>
-        <div class="project-buttons">
-            <a href="https://github.com/Adilcht/TaskFlow1" class="btn-taskflow-github" target="_blank" rel="noopener noreferrer">
-                <i class="fab fa-github"></i> View on GitHub
-            </a>
-        </div>
-    </div>
-    <div class="project-visual">
-        <div class="video-container" style="margin-bottom: 20px;">
-            <video class="project-video" muted loop playsinline>
-                <source src="assets/taskflowuser.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            <div class="video-led-effect"></div>
-        </div>
-        <div class="video-container">
-            <video class="project-video" muted loop playsinline>
-                <source src="assets/taskflowadmin.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            <div class="video-led-effect"></div>
-        </div>
-    </div>
-</div>
+                <!-- TaskFlow Project -->
+                <div class="project-card taskflow-project">
+                    <div class="project-content">
+                        <h3 class="project-title">TaskFlow – Web Application</h3>
+                        <p class="project-description">
+                            Developed a full-stack project management web app featuring two dashboards: a User Dashboard and an Admin Dashboard.
+                            The project was organized on Trello, then deployed and published on GitHub.
+                            Frontend built with React, backend developed in Laravel (PHP) with MySQL database.
+                            Includes authentication and role-based access using Laratrust, automatically redirecting users according to their role.
+                            A secure API connection links the frontend and backend for smooth data communication.
+                        </p>
+                        <div class="project-tech">
+                            <div class="tech-badge">
+                                <i class="fab fa-laravel"></i>
+                                <span>Laravel 10</span>
+                            </div>
+                            <div class="tech-badge">
+                                <i class="fab fa-react"></i>
+                                <span>React</span>
+                            </div>
+                            <div class="tech-badge">
+                                <i class="fas fa-database"></i>
+                                <span>MySQL</span>
+                            </div>
+                            <div class="tech-badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Sanctum</span>
+                            </div>
+                            <div class="tech-badge">
+                                <i class="fas fa-users"></i>
+                                <span>Laratrust</span>
+                            </div>
+                            <div class="tech-badge">
+                                <i class="fas fa-plug"></i>
+                                <span>API</span>
+                            </div>
+                            <div class="tech-badge">
+                                <i class="fas fa-trello"></i>
+                                <span>Trello</span>
+                            </div>
+                            <div class="tech-badge">
+                                <i class="fab fa-github"></i>
+                                <span>GitHub</span>
+                            </div>
+                        </div>
+                        <div class="project-buttons">
+                            <a href="https://github.com/Adilcht/TaskFlow" class="btn-taskflow-github" target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-github"></i> View on GitHub
+                            </a>
+                        </div>
+                    </div>
+                    <div class="project-visual">
+                        <div class="video-container" data-video-src="assets/taskflowuser.mp4">
+                            <video class="project-video" muted loop playsinline>
+                                <source src="assets/taskflowuser.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
+                            <div class="video-led-effect"></div>
+                        </div>
+                        <div class="video-container" data-video-src="assets/taskflowadmin.mp4">
+                            <video class="project-video" muted loop playsinline>
+                                <source src="assets/taskflowadmin.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
+                            <div class="video-led-effect"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Villa des Lilas Project -->
                 <div class="project-card villa-project">
                     <div class="project-content">
@@ -3469,11 +3593,14 @@
                         </a>
                     </div>
                     <div class="project-visual">
-                        <div class="video-container">
+                        <div class="video-container" data-video-src="assets/villa.mp4">
                             <video class="project-video" muted loop playsinline>
                                 <source src="assets/villa.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
                             <div class="video-led-effect"></div>
                         </div>
                     </div>
@@ -3518,11 +3645,14 @@
                         </div>
                     </div>
                     <div class="project-visual">
-                        <div class="video-container">
+                        <div class="video-container" data-video-src="assets/Nike Event.mp4">
                             <video class="project-video" muted loop playsinline>
                                 <source src="assets/Nike Event.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
                             <div class="video-led-effect"></div>
                         </div>
                     </div>
@@ -3579,11 +3709,14 @@
                         </div>
                     </div>
                     <div class="project-visual">
-                        <div class="video-container">
+                        <div class="video-container" data-video-src="assets/Kowork.mp4">
                             <video class="project-video" muted loop playsinline>
                                 <source src="assets/Kowork.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
                             <div class="video-led-effect"></div>
                         </div>
                     </div>
@@ -3625,11 +3758,14 @@
                         </div>
                     </div>
                     <div class="project-visual">
-                        <div class="video-container">
+                        <div class="video-container" data-video-src="assets/aljabr.mp4">
                             <video class="project-video" muted loop playsinline>
                                 <source src="assets/aljabr.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
                             <div class="video-led-effect"></div>
                         </div>
                     </div>
@@ -3674,11 +3810,14 @@
                         </a>
                     </div>
                     <div class="project-visual">
-                        <div class="video-container">
+                        <div class="video-container" data-video-src="assets/LEADING.mp4">
                             <video class="project-video" muted loop playsinline>
                                 <source src="assets/LEADING.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
                             <div class="video-led-effect"></div>
                         </div>
                     </div>
@@ -3719,11 +3858,14 @@
                         </div>
                     </div>
                     <div class="project-visual">
-                        <div class="video-container">
+                        <div class="video-container" data-video-src="assets/casatramwaycover.mp4">
                             <video class="project-video" muted loop playsinline>
                                 <source src="assets/casatramwaycover.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
                             <div class="video-led-effect"></div>
                         </div>
                     </div>
@@ -3771,11 +3913,14 @@
                         </div>
                     </div>
                     <div class="project-visual">
-                        <div class="video-container">
+                        <div class="video-container" data-video-src="assets/tournament.mp4">
                             <video class="project-video" muted loop playsinline>
                                 <source src="assets/tournament.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
                             <div class="video-led-effect"></div>
                         </div>
                     </div>
@@ -3862,11 +4007,14 @@
                         </a>
                     </div>
                     <div class="project-visual">
-                        <div class="video-container">
+                        <div class="video-container" data-video-src="assets/Dindy.mp4">
                             <video class="project-video" muted loop playsinline>
                                 <source src="assets/Dindy.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
                             <div class="video-led-effect"></div>
                         </div>
                     </div>
@@ -3914,11 +4062,14 @@
                         </div>
                     </div>
                     <div class="project-visual">
-                        <div class="video-container">
+                        <div class="video-container" data-video-src="assets/kinder.mp4">
                             <video class="project-video" muted loop playsinline>
                                 <source src="assets/kinder.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
                             <div class="video-led-effect"></div>
                         </div>
                     </div>
@@ -3965,11 +4116,14 @@
                         </div>
                     </div>
                     <div class="project-visual">
-                        <div class="video-container">
+                        <div class="video-container" data-video-src="assets/weather.mp4">
                             <video class="project-video" muted loop playsinline>
                                 <source src="assets/weather.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
                             <div class="video-led-effect"></div>
                         </div>
                     </div>
@@ -4018,11 +4172,14 @@
                         </div>
                     </div>
                     <div class="project-visual">
-                        <div class="video-container">
+                        <div class="video-container" data-video-src="assets/Moviescope.mp4">
                             <video class="project-video" muted loop playsinline>
                                 <source src="assets/Moviescope.mp4" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <div class="video-play-overlay">
+                                <i class="fas fa-expand play-icon"></i>
+                            </div>
                             <div class="video-led-effect"></div>
                         </div>
                     </div>
@@ -4105,7 +4262,7 @@
         });
 
         // Hover effects for cursor
-        const hoverElements = document.querySelectorAll('a, button, .nav-link, .skill-item, .service-card, .timeline-card, .project-card, .tech-badge, .btn-dindy, .btn-leading, .btn-villa, .btn-kowork, .btn-kowork-github, .btn-weather, .btn-weather-github, .btn-movie, .btn-movie-github, .btn-taskflow, .btn-taskflow-github, .footer-social-icon');
+        const hoverElements = document.querySelectorAll('a, button, .nav-link, .skill-item, .service-card, .timeline-card, .project-card, .tech-badge, .btn-dindy, .btn-leading, .btn-villa, .btn-kowork, .btn-kowork-github, .btn-weather, .btn-weather-github, .btn-movie, .btn-movie-github, .btn-taskflow, .btn-taskflow-github, .footer-social-icon, .video-container');
         
         hoverElements.forEach(element => {
             element.addEventListener('mouseenter', () => {
@@ -4208,6 +4365,52 @@
                 }
             });
         }, { threshold: 0.5 });
+
+        // Video fullscreen modal functionality
+        const videoModal = document.getElementById('videoModal');
+        const modalVideo = document.getElementById('modalVideo');
+        const closeModal = document.getElementById('closeModal');
+
+        // Ouvrir la modal en plein écran
+        document.querySelectorAll('.video-container').forEach(container => {
+            container.addEventListener('click', function() {
+                const videoSrc = this.getAttribute('data-video-src');
+                modalVideo.src = videoSrc;
+                videoModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                // Jouer la vidéo automatiquement
+                modalVideo.play().catch(e => console.log('Fullscreen video autoplay failed:', e));
+            });
+        });
+
+        // Fermer la modal
+        closeModal.addEventListener('click', function() {
+            videoModal.classList.remove('active');
+            modalVideo.pause();
+            modalVideo.src = '';
+            document.body.style.overflow = 'auto';
+        });
+
+        // Fermer la modal avec la touche Échap
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && videoModal.classList.contains('active')) {
+                videoModal.classList.remove('active');
+                modalVideo.pause();
+                modalVideo.src = '';
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Fermer la modal en cliquant à l'extérieur
+        videoModal.addEventListener('click', function(e) {
+            if (e.target === videoModal) {
+                videoModal.classList.remove('active');
+                modalVideo.pause();
+                modalVideo.src = '';
+                document.body.style.overflow = 'auto';
+            }
+        });
 
         // Correction pour l'affichage complet des vidéos
         document.addEventListener('DOMContentLoaded', function() {
